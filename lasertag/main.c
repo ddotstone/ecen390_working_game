@@ -55,7 +55,7 @@ int main() {
   // interrupts not needed for these tests
   // queue_runTest(); // M1
   // filter_runTest(); // M3 T1
-   transmitter_runTest(); // M3 T2
+  transmitter_runTest(); // M3 T2
   // buffer_runTest(); // M3 T3
   // detector_runTest(); // M3 T3
   // sound_runTest(); // M5
@@ -74,9 +74,9 @@ int main() {
 
   transmitter_runTestNoncontinuous();
   transmitter_runTestContinuous();
-  //trigger_runTest();
-  //hitLedTimer_runTest();
-  //lockoutTimer_runTest();
+  trigger_runTest();
+  hitLedTimer_runTest();
+  lockoutTimer_runTest();
 #endif
 
 #ifdef RUNNING_MODE_M3_T3

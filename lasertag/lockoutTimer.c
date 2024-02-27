@@ -89,6 +89,7 @@ bool lockoutTimer_running() {
 // This test uses the interval timer to determine correct delay for
 // the interval timer.
 bool lockoutTimer_runTest() {
+    printf("starting lockoutTimer_runTest()\n");
     intervalTimer_init(INTERVAL_TIMER_TIMER_1);
     
     //waiting for timerState to change
@@ -104,5 +105,6 @@ bool lockoutTimer_runTest() {
             return (intervalTimer_getTotalDurationInSeconds(INTERVAL_TIMER_TIMER_1) == LOCKOUT_TIME);
         }
     }
-    
+    printf("exiting lockoutTimer_runTest()\n");
+
 }
