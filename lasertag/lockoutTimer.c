@@ -14,7 +14,7 @@ typedef enum {
   UNLOCKED // Lock out time is completed and waiting for new hit
 } lockoutTimer_state_t;
 
-// Touchscreen names
+//Timer State
 volatile static lockoutTimer_state_t timerState;
 
 // Creating the timer counter
@@ -39,6 +39,8 @@ void lockoutTimer_tick() {
            break;
 
         case LOCKEDOUT:  // Hit detected and lock out commences for .5 seconds
+
+            //If timer hits expire value, go to init state
             if (timer == LOCKOUT_TIMER_EXPIRE_VALUE) {
                 timerState = INIT;
             }
@@ -95,8 +97,10 @@ bool lockoutTimer_runTest() {
     //waiting for timerState to change
     lockoutTimer_start();
     intervalTimer_start(INTERVAL_TIMER_TIMER_1);
+
     //waiting for timerState to change again
     while(true){
+        //If the lockout timer no longer running, stop hardware timer and return
         if (!lockoutTimer_running()) {
             intervalTimer_stop(INTERVAL_TIMER_TIMER_1);
 

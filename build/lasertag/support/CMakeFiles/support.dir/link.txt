@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsupport.a CMakeFiles/support.dir/bufferTest.c.o CMakeFiles/support.dir/filterTest.c.o CMakeFiles/support.dir/histogram.c.o CMakeFiles/support.dir/queueTest.c.o CMakeFiles/support.dir/runningModes.c.o CMakeFiles/support.dir/timer_ps.c.o
+/usr/bin/ranlib libsupport.a

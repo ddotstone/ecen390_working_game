@@ -16,12 +16,12 @@
 
 // State of lockout timer
 typedef enum {
-  INIT,    // Setting timer to the initial state waiting to get initial hit
-  LED_ON, // Hit detected and lock out commences for .5 seconds
-  LED_OFF // Lock out time is completed and waiting for new hit
+  INIT,    // Initializer
+  LED_ON, // LED high
+  LED_OFF // LED low and wait for hig
 } hitTimer_state_t;
 
-// Touchscreen names
+
 volatile static hitTimer_state_t timerState;
 volatile bool ledTimerEnabled;
 
@@ -39,19 +39,23 @@ void hitLedTimer_init() {
 // Standard tick function.
 void hitLedTimer_tick(){
      static uint16_t timer = 0;
+    
+    //Transitional Logic for timerState
     switch(timerState) //State update
     {
         case LED_OFF:   // Setting timer to the initial state waiting to get initial hit
            break;
 
-        case LED_ON:  // Hit detected and lock out commences for .5 seconds
+        case LED_ON:  // Hit detected LED high for 500 ms
+
+            // If timer reaches expire tick count, transition to init state
             if (timer == HIT_TIMER_EXPIRE_VALUE) {
                 timerState = INIT;
                 hitLedTimer_turnLedOff();
             }
             break;
 
-        case INIT:  // Lock out time is completed and waiting for new hit
+        case INIT:  // Reinitializes values
             timerState = LED_OFF;
             break;
 
@@ -59,18 +63,18 @@ void hitLedTimer_tick(){
             printf("No state\n");
     }   
 
-
+    //Action Logic for timerState
     switch(timerState) //State action
     {
         case LED_OFF:   // Setting timer to the initial state waiting to get initial hit
             timer = 0;
             break;
 
-        case LED_ON:  // Hit detected and lock out commences for .5 seconds
+        case LED_ON:  // Hit detected LED high for 500 ms
             timer++;
             break;
 
-        case INIT:    // Lock out time is completed and waiting for new hit
+        case INIT:    // Reinitializes values
             break;
 
         default:    //default case
@@ -119,11 +123,14 @@ void hitLedTimer_enable() {
 void hitLedTimer_runTest() {
     printf("starting hitLedTimer_runTest()\n");
 
+    //Wait for button 3 press
     while (!(buttons_read() & BUTTONS_BTN3_MASK)) { 
         hitLedTimer_start();
         while (hitLedTimer_running()) {}
         utils_msDelay(WAIT_TIME);
-    } // Loop until Button 3 is pressed:
+    } 
+
+    //Wait for button 3 release
     while ((buttons_read() & BUTTONS_BTN3_MASK)) {} 
     printf("exiting hitLedTimer_runTest()\n");
 
