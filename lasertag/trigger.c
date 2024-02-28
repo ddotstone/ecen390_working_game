@@ -21,6 +21,7 @@
 // The trigger state machine debounces both the press and release of gun
 // trigger. Ultimately, it will activate the transmitter when a debounced press
 // is detected.
+
 #define TRIGGER_GUN_TRIGGER_MIO_PIN 10
 #define DEBOUNCE_WAIT_TIME 5000
 #define GUN_TRIGGER_PRESSED 1
@@ -29,12 +30,12 @@ typedef uint16_t trigger_shotsRemaining_t;
 volatile bool ignoreGunInput;
 volatile bool singleShot;
 
-// State of lockout timer
+// State of trigger timer
 typedef enum {
-  INIT,    // Setting transmitter to the initial state
-  WAIT, // Hit detected and lock out commences for .5 seconds
-  DEBOUNCED_PRESS, // Setting the timer back to 0
-  DEBOUNCE_RELEASE
+  INIT,    // Initializing trigger states
+  WAIT, // debug button press
+  DEBOUNCED_PRESS, //Wait for button low
+  DEBOUNCE_RELEASE //Debounce button low
 } trigger_state_t;
 
 volatile static trigger_state_t triggerState;
@@ -54,6 +55,7 @@ bool triggerPressed() {
 void trigger_init() {
     disableTrigger = true;
     mio_setPinAsInput(TRIGGER_GUN_TRIGGER_MIO_PIN);
+
     // If the trigger is pressed when trigger_init() is called, assume that the gun is not connected and ignore it.
     if (triggerPressed()) {
         ignoreGunInput = true;
@@ -64,16 +66,18 @@ void trigger_init() {
 // Standard tick function.
 void trigger_tick() {
     static uint16_t timer = 0;
+
+    //Transitional Logic for trigger state machine
     switch(triggerState) //State transition
     {
-        case INIT:   // Setting timer to the initial state waiting to get initial hit
-            if (triggerPressed()) {
+        case INIT:   // Setting timer to the initial state waiting for button press
+            if (triggerPressed() && !disableTrigger) {
                 triggerState = WAIT;
             }
             break;
 
-        case WAIT:  // Hit detected and lock out commences for .5 seconds
-            if (!triggerPressed() && !disableTrigger) {
+        case WAIT:  // Debounce button press
+            if (!triggerPressed()) {
                 triggerState = INIT;
             }
             else if (timer == DEBOUNCE_WAIT_TIME) {
@@ -83,13 +87,13 @@ void trigger_tick() {
             }
             break;
 
-        case DEBOUNCED_PRESS:    // Lock out time is completed and waiting for new hit
+        case DEBOUNCED_PRESS:    // Activate transmitter and wait for button release
             if (!triggerPressed()) {
                 triggerState = DEBOUNCE_RELEASE;
             }
             break;
 
-        case DEBOUNCE_RELEASE:    // Lock out time is completed and waiting for new hit
+        case DEBOUNCE_RELEASE:    // Debounce button release
             if (triggerPressed()) {
                 triggerState = DEBOUNCED_PRESS;
             }
@@ -104,28 +108,33 @@ void trigger_tick() {
             printf("No state");
     }
 
-     switch(triggerState) //State action
-    {
-        case INIT:   // Setting timer to the initial state waiting to get initial hit
+    //Action Logic for trigger state machine
+    switch(triggerState){ //State action
+        case INIT:   // Setting timer to the initial state waiting for button press
             singleShot = true;
             timer = 0;
             break;
 
-        case WAIT:  // Hit detected and lock out commences for .05 seconds
+        case WAIT:  // Debounce button press
             timer++;
             break;
 
-        case DEBOUNCED_PRESS:    // Lock out time is completed and waiting for new hit
+        case DEBOUNCED_PRESS:    // Activate transmitter and wait for button release
+            
+            //Determine if trigger has been shot, if not shoots and sets singleShot to false
             if (singleShot) {
                 transmitter_run();
                 singleShot = false;
             }
+
+            //Resets timer
             timer = 0;
             break;   
 
-        case DEBOUNCE_RELEASE:
+        case DEBOUNCE_RELEASE:  // Debounce button release
             timer++;
             break;
+
         default:    //default case
             printf("No state");
     }
@@ -135,15 +144,13 @@ void trigger_tick() {
 // this function is called. This allows you to ignore the trigger when helpful
 // (mostly useful for testing).
 void trigger_enable() {
-    disableTrigger = true;
-    ignoreGunInput = false;
+    disableTrigger = false;
     triggerState = INIT;
 }
 
 // Disable the trigger state machine so that trigger presses are ignored.
 void trigger_disable() {
-    disableTrigger = false;
-    ignoreGunInput = true;
+    disableTrigger = true;
     triggerState = INIT;
 }
 
