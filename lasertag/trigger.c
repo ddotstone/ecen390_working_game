@@ -6,7 +6,7 @@
 #include "mio.h"
 
 // Uncomment for debug prints
-#define DEBUG
+//#define DEBUG
  
 #if defined(DEBUG)
 #include <stdio.h>
