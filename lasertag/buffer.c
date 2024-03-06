@@ -24,7 +24,7 @@ typedef struct {
     buffer_data_t data[BUFFER_SIZE]; // Values are stored here.
 } buffer_t;
 
-volatile static buffer_t buf;
+volatile static buffer_t buf; //Buffer variable
 
 // Initialize the buffer to empty.
 void buffer_init(void){
@@ -39,10 +39,15 @@ void buffer_init(void){
 
 // Add a value to the buffer. Overwrite the oldest value if full.
 void buffer_pushover(buffer_data_t value){
+
+    //If buffer full, overwrite buffer value
     if(buf.elementCount == BUFFER_SIZE){
-        buffer_pop();
+        buf.elementCount--;
+        buf.indexOut = (buf.indexOut+1) % BUFFER_SIZE;
     }
 
+
+    //Increment Element count, write value to indexIn, increment indexIn
     buf.data[buf.indexIn] = value;
     buf.elementCount++;
     buf.indexIn = (buf.indexIn+1) % BUFFER_SIZE;
@@ -50,16 +55,17 @@ void buffer_pushover(buffer_data_t value){
 
 // Remove a value from the buffer. Return zero if empty.
 buffer_data_t buffer_pop(void){
-    //specific instructions for only if the buffer is not empty 
+
+    // Return 0 if buffer empty
     if(buf.elementCount == 0){
         return EMPTY;
     }
 
-    //changing things that are done only when the buffer is empty
+    // Changing things that are done only when the buffer is empty
     buffer_data_t temp_data = buf.data[buf.indexOut];
     buf.elementCount--;
     buf.indexOut = (buf.indexOut+1) % BUFFER_SIZE;
-    //return buffer_data_t type
+    // Return buffer_data_t type
     return temp_data;
 }
 
