@@ -34,6 +34,7 @@ void hitLedTimer_init() {
     timerState = INIT;
     mio_setPinAsOutput(HIT_LED_TIMER_OUTPUT_PIN);
     ledTimerEnabled = true;
+    hitLedTimer_turnLedOff();
 }
 
 // Standard tick function.
