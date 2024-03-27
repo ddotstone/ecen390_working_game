@@ -1,9 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "trigger.h"
 #include "transmitter.h"
 #include "buttons.h"
+#include "autoReloadTimer.h"
 #include "mio.h"
+#include "sound.h"
 
 // Uncomment for debug prints
 //#define DEBUG
@@ -24,11 +27,13 @@
 
 #define TRIGGER_GUN_TRIGGER_MIO_PIN 10
 #define DEBOUNCE_WAIT_TIME 5000
+#define AUTO_RELOAD_TICKS 300000
 #define GUN_TRIGGER_PRESSED 1
 
 typedef uint16_t trigger_shotsRemaining_t;
 volatile bool ignoreGunInput;
 volatile bool singleShot;
+volatile trigger_shotsRemaining_t shots_remaining;
 
 // State of trigger timer
 typedef enum {
@@ -66,6 +71,7 @@ void trigger_init() {
 // Standard tick function.
 void trigger_tick() {
     static uint16_t timer = 0;
+    static uint32_t pressTimer = 0;
 
     //Transitional Logic for trigger state machine
     switch(triggerState) //State transition
@@ -74,6 +80,7 @@ void trigger_tick() {
             if (triggerPressed() && !disableTrigger) {
                 triggerState = WAIT;
             }
+            
             break;
 
         case WAIT:  // Debounce button press
@@ -81,9 +88,18 @@ void trigger_tick() {
                 triggerState = INIT;
             }
             else if (timer == DEBOUNCE_WAIT_TIME) {
-                triggerState = DEBOUNCED_PRESS;
-                DPCHAR('D');
-                DPCHAR('\n');
+                if(!disableTrigger){
+                    triggerState = DEBOUNCED_PRESS;
+                    DPCHAR('D');
+                    DPCHAR('\n');
+                    sound_playSound(sound_gunFire_e);
+
+                }
+                else{
+                    singleShot = false;
+                    triggerState = DEBOUNCED_PRESS;
+                    sound_playSound(sound_gunClick_e);
+                }
             }
             break;
 
@@ -113,6 +129,7 @@ void trigger_tick() {
         case INIT:   // Setting timer to the initial state waiting for button press
             singleShot = true;
             timer = 0;
+            pressTimer = 0;
             break;
 
         case WAIT:  // Debounce button press
@@ -125,14 +142,21 @@ void trigger_tick() {
             if (singleShot) {
                 transmitter_run();
                 singleShot = false;
+                shots_remaining--;
             }
-
+            if(pressTimer == AUTO_RELOAD_TICKS && !autoReloadTimer_running()){
+                autoReloadTimer_start();
+                sound_playSound(sound_gunReload_e);
+                pressTimer = 0;
+            }
+            pressTimer++;
             //Resets timer
             timer = 0;
             break;   
 
         case DEBOUNCE_RELEASE:  // Debounce button release
             timer++;
+
             break;
 
         default:    //default case
@@ -145,23 +169,21 @@ void trigger_tick() {
 // (mostly useful for testing).
 void trigger_enable() {
     disableTrigger = false;
-    triggerState = INIT;
 }
 
 // Disable the trigger state machine so that trigger presses are ignored.
 void trigger_disable() {
     disableTrigger = true;
-    triggerState = INIT;
 }
 
 // Returns the number of remaining shots.
 trigger_shotsRemaining_t trigger_getRemainingShotCount() {
-    return 0;
+    return shots_remaining;
 }
 
 // Sets the number of remaining shots.
 void trigger_setRemainingShotCount(trigger_shotsRemaining_t count) {
-
+    shots_remaining = count;
 }
 
 // Runs the test continuously until BTN3 is pressed.

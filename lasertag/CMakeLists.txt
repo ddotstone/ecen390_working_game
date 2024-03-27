@@ -9,7 +9,9 @@ main.c
  lockoutTimer.c
  buffer.c
  detector.c
-# game.c
+ autoReloadTimer.c
+ invincibilityTimer.c
+ game.c
 )
 
 include_directories(. sound)

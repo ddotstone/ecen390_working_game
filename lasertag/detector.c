@@ -6,12 +6,13 @@
 #include "lockoutTimer.h"
 #include "hitLedTimer.h"
 #include "interrupts.h"
+#include "invincibilityTimer.h"
 
 
 #define FREQUENCY_COUNT 10
 #define COUNT_BEFORE_FILTER 10
 #define ADC_SCALAR 4.8840048E-4
-#define FUDGE_FACTOR 1000
+#define FUDGE_FACTOR 190
 #define MEDIAN_INDEX 4
 #define NO_HIT_DETECTED -1
 
@@ -146,7 +147,7 @@ void detector(bool interruptsCurrentlyEnabled) {
             }
 
             //Run if lockout Timer is Not Running
-            if (!lockoutTimer_running()){
+            if (!lockoutTimer_running() && !invincibilityTimer_running()){
                 hit_detect(); //Run hit_detect() algorithm
                 if(detector_hitDetected()){
                     lockoutTimer_start(); //Start the lockout timer

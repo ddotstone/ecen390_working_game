@@ -1,3 +1,4 @@
+
 /*
 This software is provided for student assignment use in the Department of
 Electrical and Computer Engineering, Brigham Young University, Utah, USA.
@@ -14,10 +15,10 @@ For questions, contact Brad Hutchings or Jeff Goeders, https://ece.byu.edu/
 // #define RUNNING_MODE_M3_T2
 
 // Uncomment to run continuous/shooter mode, Milestone 3, Task 3
- #define RUNNING_MODE_M3_T3
+// #define RUNNING_MODE_M3_T3
 
 // Uncomment to run two-player mode, Milestone 5
-// #define RUNNING_MODE_M5
+ #define RUNNING_MODE_M5
 
 #include <assert.h>
 #include <stdio.h>

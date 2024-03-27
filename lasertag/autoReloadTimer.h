@@ -16,14 +16,10 @@ For questions, contact Brad Hutchings or Jeff Goeders, https://ece.byu.edu/
 // trigger state-machine. When it goes to 0, it starts a configurable delay and
 // after the delay expires, it sets the remaining shots to a specific value.
 
-#ifndef AUTO_RELOAD_EXPIRE_VALUE
 // Default, Defined in terms of 100 kHz ticks.
 #define AUTO_RELOAD_EXPIRE_VALUE 300000
-#endif
 
-#ifndef AUTO_RELOAD_SHOT_VALUE
 #define AUTO_RELOAD_SHOT_VALUE 10 // Default
-#endif
 
 // Need to init things.
 void autoReloadTimer_init();
@@ -40,4 +36,4 @@ bool autoReloadTimer_running();
 // Disables the autoReloadTimer and re-initializes it.
 void autoReloadTimer_cancel();
 
-#endif /* AUTORELOADTIMER_H_ */
+#endif

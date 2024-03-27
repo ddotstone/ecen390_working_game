@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "filter.h"
+#include "detector.h"
 #include "transmitter.h"
 #include "mio.h"
 #include "buttons.h"
@@ -22,6 +23,7 @@
 #define DPCHAR(ch)
 #endif
 
+#define FREQUENCY_COUNT 10
 #define TRANSMITTER_HIGH_VALUE 1
 #define TRANSMITTER_LOW_VALUE 0
 #define TRANSMITTER_TEST_TICK_PERIOD_IN_MS 10
@@ -82,7 +84,6 @@ void transmitter_tick() {
            break;
 
         case TRANSMITTING_HIGH:  // Transmitter is high
-
             //If timer is up, set transmitter state to INIT
             if (timer == tickCountPeriod) { transmitterState = INIT; }
             //If transmitter is at frequency tick count, switch to low state

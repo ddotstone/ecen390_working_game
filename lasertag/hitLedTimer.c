@@ -24,6 +24,7 @@ typedef enum {
 
 volatile static hitTimer_state_t timerState;
 volatile bool ledTimerEnabled;
+volatile uint16_t timer = 0;
 
 // The hitLedTimer is active for 1/2 second once it is started.
 // While active, it turns on the LED connected to MIO pin 11
@@ -39,8 +40,7 @@ void hitLedTimer_init() {
 
 // Standard tick function.
 void hitLedTimer_tick(){
-     static uint16_t timer = 0;
-    
+
     //Transitional Logic for timerState
     switch(timerState) //State update
     {
@@ -48,9 +48,8 @@ void hitLedTimer_tick(){
            break;
 
         case LED_ON:  // Hit detected LED high for 500 ms
-
             // If timer reaches expire tick count, transition to init state
-            if (timer == HIT_TIMER_EXPIRE_VALUE) {
+            if (timer >= HIT_TIMER_EXPIRE_VALUE) {
                 timerState = INIT;
                 hitLedTimer_turnLedOff();
             }
@@ -111,6 +110,8 @@ void hitLedTimer_turnLedOff() {
 // Disables the hitLedTimer.
 void hitLedTimer_disable() {
     ledTimerEnabled = false;
+    timer = 0;
+    timerState = LED_OFF;
 }
 
 // Enables the hitLedTimer.
