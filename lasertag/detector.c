@@ -27,6 +27,7 @@ volatile bool detector_hitDetectedFlag;
 uint32_t detector_hitArray[FREQUENCY_COUNT];
 uint16_t lastHit;
 uint64_t invocationCount;
+bool first_run;
 
 
 //hit_detect function that determins if there has been a registered
@@ -79,10 +80,11 @@ void detector_init(void) {
     for (uint16_t i = 0; i < FREQUENCY_COUNT; i++){
         ignoredFreq[i] = FALSE;
     }
-
+    filter_init();
     //Assert asvValuesAdded to 0 and detector_hitDetectedFlag to false
     adcValuesAdded = 0;
     detector_hitDetectedFlag = FALSE;
+    first_run = true;
 }
 
 // freqArray is indexed by frequency number. If an element is set to true,
@@ -143,7 +145,8 @@ void detector(bool interruptsCurrentlyEnabled) {
             //For each filter 0-9, run iir_filter and power calulation
             for (uint16_t filter = 0; filter < FILTER_FREQUENCY_COUNT; ++filter){
                 filter_iirFilter(filter);
-                filter_computePower(filter, FALSE, FALSE);
+                filter_computePower(filter, first_run, FALSE);
+                first_run = false;
             }
 
             //Run if lockout Timer is Not Running

@@ -30,6 +30,7 @@ The code in runningModes.c can be an example for implementing the game here.
 #include "transmitter.h"
 #include "detector.h"
 #include "utils.h"
+#include "display.h"
 
 
 #define TEAM_1 6
@@ -39,6 +40,7 @@ The code in runningModes.c can be an example for implementing the game here.
 #define INVINCIBILTY_TIME 5
 #define INTERRUPTS_CURRENTLY_ENABLED true
 #define FILTER_OUT_TIME 500
+#define SWITCH_1_MASK 0x1
 
 
 
@@ -55,7 +57,7 @@ void game_twoTeamTag(void) {
   // Init
   uint16_t hitCount = 0;
   runningModes_initAll();
-
+  detector_init();
 
   sound_setVolume(sound_minimumVolume_e);
   sound_playSound(sound_gameStart_e);
@@ -66,8 +68,9 @@ void game_twoTeamTag(void) {
   
   
   // Get the result of Switch 0 to set the player frequency  
-  uint16_t team = switches_read() & 1 ? TEAM_2 : TEAM_1;
+  uint16_t team = switches_read() & SWITCH_1_MASK ? TEAM_2 : TEAM_1;
   transmitter_setFrequencyNumber(team);
+  transmitter_setContinuousMode(false);
 
   bool ignoredFrequencies[FILTER_FREQUENCY_COUNT];
   
@@ -80,6 +83,10 @@ void game_twoTeamTag(void) {
   detector_setIgnoredFrequencies(ignoredFrequencies);
   trigger_enable();
   transmitter_setFrequencyNumber(team);
+  char teamNumber[10];
+  sprintf(teamNumber,"Team %d", team);
+  display_setCursor(100,100);
+  display_print(teamNumber);
 
   interrupts_enableTimerGlobalInts(); // enable global interrupts.
   interrupts_startArmPrivateTimer();  // start the main timer.
@@ -115,9 +122,8 @@ void game_twoTeamTag(void) {
     }
   }
   trigger_disable();
-
-  utils_msDelay(FILTER_OUT_TIME);
   runningModes_printRunTimeStatistics(); // Print the run-time statistics.
+  utils_msDelay(FILTER_OUT_TIME);
 
 // Yell at the player to return to the base forever
   while(!(buttons_read() & BUTTONS_BTN3_MASK)){
