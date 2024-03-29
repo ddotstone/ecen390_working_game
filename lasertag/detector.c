@@ -149,7 +149,7 @@ void detector(bool interruptsCurrentlyEnabled) {
                 first_run = false;
             }
 
-            //Run if lockout Timer is Not Running
+            //Run if lockout Timer or invincibilityTimer is Not Running
             if (!lockoutTimer_running() && !invincibilityTimer_running()){
                 hit_detect(); //Run hit_detect() algorithm
                 if(detector_hitDetected()){

@@ -19,15 +19,17 @@ enum invincibilityTimer_st_t {
 	INVINCIBLE,
     DISABLED
 };
-volatile static enum invincibilityTimer_st_t currentState;
-volatile static uint32_t timerCount;
-volatile static uint32_t timerMaxValue;
-volatile static bool start;
+
+volatile static enum invincibilityTimer_st_t currentState; //Current State of Timer
+volatile static uint32_t timerCount; //Tick Count for timer
+volatile static uint32_t timerMaxValue; //Maximum ticks before reset timer
+volatile static bool start; //Flag to start timer
 
 // Perform any necessary inits for the invincibility timer.
 void invincibilityTimer_init(){
     start = false;
     currentState = INIT;
+    //Set Hit LED to output
     mio_setPinAsOutput(HIT_LED_TIMER_OUTPUT_PIN);
 
 };
@@ -97,12 +99,14 @@ bool invincibilityTimer_running(){
     return start;
 };
 
+
+//Helper function to turn on Hit LED if invincibility
 void invincibilityTimer_turnLedOn() {
     leds_write(LED0_MASK);
     mio_writePin(HIT_LED_TIMER_OUTPUT_PIN, TRANSMIT_HIGH);
 }
 
-// Turns the gun's hit-LED off.
+//Helper function to turn off Hit LED if not invincibile
 void invincibilityTimer_turnLedOff() {
     leds_write(0);
     mio_writePin(HIT_LED_TIMER_OUTPUT_PIN, 0);

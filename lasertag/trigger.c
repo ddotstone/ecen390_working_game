@@ -31,9 +31,9 @@
 #define GUN_TRIGGER_PRESSED 1
 
 typedef uint16_t trigger_shotsRemaining_t;
-volatile bool ignoreGunInput;
-volatile bool singleShot;
-volatile trigger_shotsRemaining_t shots_remaining;
+volatile bool ignoreGunInput; //ignore gun pin input
+volatile bool singleShot; //Has a shot been shot for this trigger pull
+volatile trigger_shotsRemaining_t shots_remaining; //Total shots left in gun
 
 // State of trigger timer
 typedef enum {
@@ -43,8 +43,8 @@ typedef enum {
   DEBOUNCE_RELEASE //Debounce button low
 } trigger_state_t;
 
-volatile static trigger_state_t triggerState;
-volatile bool disableTrigger;
+volatile static trigger_state_t triggerState; //Current state of trigger sm
+volatile bool disableTrigger; //Disable the trigger for use
 
 // Trigger can be activated by either btn0 or the external gun that is attached to TRIGGER_GUN_TRIGGER_MIO_PIN
 // Gun input is ignored if the gun-input is high when the init() function is invoked.
@@ -70,13 +70,14 @@ void trigger_init() {
 
 // Standard tick function.
 void trigger_tick() {
-    static uint16_t timer = 0;
-    static uint32_t pressTimer = 0;
+    static uint16_t timer = 0; //Timer for tick function
+    static uint32_t pressTimer = 0; //Timer for press hold time
 
     //Transitional Logic for trigger state machine
     switch(triggerState) //State transition
     {
         case INIT:   // Setting timer to the initial state waiting for button press
+            //If the trigger is pressed, go to WAIT state to debounce
             if (triggerPressed()) {
                 triggerState = WAIT;
             }
@@ -84,17 +85,21 @@ void trigger_tick() {
             break;
 
         case WAIT:  // Debounce button press
+            //If the trigger is not pressed, return to init
             if (!triggerPressed()) {
                 triggerState = INIT;
             }
+            //If the trigger is pressed, either shoot or signify no bullets left
             else if (timer == DEBOUNCE_WAIT_TIME) {
+                //If trigger not disabled, shoot a shot
                 if(!disableTrigger){
                     triggerState = DEBOUNCED_PRESS;
                     DPCHAR('D');
                     DPCHAR('\n');
                     sound_playSound(sound_gunFire_e);
-
+ 
                 }
+                //If trigger disabled, signify no shot taken
                 else{
                     singleShot = false;
                     triggerState = DEBOUNCED_PRESS;
@@ -104,15 +109,18 @@ void trigger_tick() {
             break;
 
         case DEBOUNCED_PRESS:    // Activate transmitter and wait for button release
+            //If the trigger is released, debounce release
             if (!triggerPressed()) {
                 triggerState = DEBOUNCE_RELEASE;
             }
             break;
 
         case DEBOUNCE_RELEASE:    // Debounce button release
+            //If triggerPressed while debouncing, return to debounced_press state
             if (triggerPressed()) {
                 triggerState = DEBOUNCED_PRESS;
             }
+            //If the timer reaches the debounce time, go to init
             else if (timer == DEBOUNCE_WAIT_TIME) {
                 DPCHAR('U');
                 DPCHAR('\n');
@@ -127,9 +135,9 @@ void trigger_tick() {
     //Action Logic for trigger state machine
     switch(triggerState){ //State action
         case INIT:   // Setting timer to the initial state waiting for button press
-            singleShot = true;
-            timer = 0;
-            pressTimer = 0;
+            singleShot = true; //Reset Single Shot
+            timer = 0; //Reset Timer
+            pressTimer = 0; //Reset Press Timer
             break;
 
         case WAIT:  // Debounce button press
@@ -144,18 +152,19 @@ void trigger_tick() {
                 singleShot = false;
                 shots_remaining--;
             }
-            if(pressTimer == AUTO_RELOAD_TICKS && !autoReloadTimer_running()){
-                autoReloadTimer_start();
-                sound_playSound(sound_gunReload_e);
+            //If the held trigger time reaches 3 Seconds, reload the gun
+            if(pressTimer == AUTO_RELOAD_TICKS){
+                autoReloadTimer_quick();//Run quick reload
+                sound_playSound(sound_gunReload_e); //Play reload sound
                 pressTimer = 0;
             }
-            pressTimer++;
+            pressTimer++; //Increment press hold timer
             //Resets timer
             timer = 0;
             break;   
 
         case DEBOUNCE_RELEASE:  // Debounce button release
-            timer++;
+            timer++; //Increment timer
 
             break;
 
