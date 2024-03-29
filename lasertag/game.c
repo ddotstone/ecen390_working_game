@@ -59,7 +59,7 @@ void game_twoTeamTag(void) {
   runningModes_initAll();
   detector_init();
 
-  sound_setVolume(sound_minimumVolume_e);
+  sound_setVolume(sound_mediumLowVolume_e);
   sound_playSound(sound_gameStart_e);
 
   // Configuration...
@@ -91,7 +91,8 @@ void game_twoTeamTag(void) {
   interrupts_enableTimerGlobalInts(); // enable global interrupts.
   interrupts_startArmPrivateTimer();  // start the main timer.
   interrupts_enableArmInts(); // now the ARM processor can see interrupts.
-
+  while(sound_isBusy()){};
+  detector_clearHit();
   // Implement game loop...
   // Getting shot, shooting, keeping track of lives, and making 
   while(true){

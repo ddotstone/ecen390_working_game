@@ -77,7 +77,7 @@ void trigger_tick() {
     switch(triggerState) //State transition
     {
         case INIT:   // Setting timer to the initial state waiting for button press
-            if (triggerPressed() && !disableTrigger) {
+            if (triggerPressed()) {
                 triggerState = WAIT;
             }
             
