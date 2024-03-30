@@ -132,7 +132,7 @@ void game_twoTeamTag(void) {
         if(lives <= 0){
             printf("Game Over\n"); //Debug Print
             sound_playSound(sound_gameOver_e); //Play Game Over Sound
-            break;
+            break; //If game over break out of game loop
         } else {
           printf("out of health\n"); //Debug Print
           sound_playSound(sound_loseLife_e); //Play loseLife sound

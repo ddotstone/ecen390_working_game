@@ -17,9 +17,9 @@ uint32_t tick_counter; //Tick count
 // Inits trigger enabled and load correct shot count
 void autoReloadTimer_init(){
     trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE);
-    trigger_enable();
+    trigger_enable(); //Enable Trigger
     autoReload_s =  WAITING_RELOAD; //Start Timer in waiting for reload
-    tick_counter = 0;
+    tick_counter = 0; //Reset Counter
 }
 
 // Standard tick function.
@@ -28,7 +28,7 @@ void autoReloadTimer_tick(){
         case WAITING_RELOAD:
             //If no shots left, transition to Lockedout and disable the trigger
             if(trigger_getRemainingShotCount() == 0){
-                trigger_disable();
+                trigger_disable(); //Disable Trigger
                 autoReload_s = LOCKEDOUT;
                 
             }
@@ -39,9 +39,9 @@ void autoReloadTimer_tick(){
             if(tick_counter == AUTO_RELOAD_EXPIRE_VALUE){
                 tick_counter = 0;
                 autoReload_s = WAITING_RELOAD;
-                trigger_enable();
-                trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE);
-                sound_playSound(sound_gunReload_e);
+                trigger_enable(); //Reenable Trigger
+                trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE); //Reset Shots
+                sound_playSound(sound_gunReload_e); //Play Reload Sound
 
             }
             break;
@@ -63,10 +63,10 @@ void autoReloadTimer_tick(){
 
 // Calling this starts starts a quick reload
 void autoReloadTimer_quick(){
-    sound_playSound(sound_gunReload_e);
-    autoReload_s = WAITING_RELOAD;
-    trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE);
-    tick_counter = 0;
+    sound_playSound(sound_gunReload_e); //Play Reload Sound
+    autoReload_s = WAITING_RELOAD; //Set state to waiting for Reload
+    trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE); // Set all remaing shots 
+    tick_counter = 0; //Reset Tick Counter
 }
 
 // Returns true if the timer is currently running.

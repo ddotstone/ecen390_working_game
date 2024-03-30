@@ -50,9 +50,9 @@ void invincibilityTimer_tick(){
                 currentState = DISABLED;
                 start = false;
                 timerCount = 0;
-                trigger_enable();
-                hitLedTimer_enable();
-                invincibilityTimer_turnLedOff();
+                trigger_enable(); //Enable the Trigger
+                hitLedTimer_enable();//Enable Hit Led
+                invincibilityTimer_turnLedOff(); //Turn off LED
 
             }
             break;
@@ -62,9 +62,9 @@ void invincibilityTimer_tick(){
             if(start){
                 currentState = INVINCIBLE;
                 timerCount = 0;
-                trigger_disable();
-                hitLedTimer_disable();
-                invincibilityTimer_turnLedOn();
+                trigger_disable(); //Disable Trigger
+                hitLedTimer_disable(); //Disable hitLedTimer
+                invincibilityTimer_turnLedOn(); //Turn on the LED
 
             }
             break;
@@ -90,7 +90,7 @@ void invincibilityTimer_tick(){
 // Calling this starts the timer.
 void invincibilityTimer_start(uint32_t seconds){
     start = true;
-    hitLedTimer_disable();
+    hitLedTimer_disable(); //Disable hit LED Timer
     timerMaxValue = seconds * FREQUENCY;
 };
 
