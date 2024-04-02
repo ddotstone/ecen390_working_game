@@ -37,7 +37,8 @@ The code in runningModes.c can be an example for implementing the game here.
 #define TEAM_1 6
 #define TEAM_2 9
 #define LIVES 3
-#define HEALTH 5
+#define HEALTH_JEDI 5
+#define HEALTH_DROID 1
 #define INVINCIBILTY_TIME 5
 #define INTERRUPTS_CURRENTLY_ENABLED true
 #define FILTER_OUT_TIME 500
@@ -51,10 +52,10 @@ The code in runningModes.c can be an example for implementing the game here.
 #define TEXT_SIZE 3
 #define GO_TEXT_SIZE 4
 
-uint16_t lives = LIVES;
-uint16_t health = HEALTH;
-uint16_t prevHealth = HEALTH;
-uint16_t prevLives = HEALTH;
+uint16_t lives;
+uint16_t health;
+uint16_t prevHealth;
+uint16_t prevLives;
 uint16_t team;
 
 //Helper function to print Health and Lives to screen
@@ -80,7 +81,7 @@ void game_twoTeamTag(void) {
   // Init
   initializers_all();
   //Set Game Volume and also Set start Sound
-  sound_setVolume(sound_mediumLowVolume_e);
+  sound_setVolume(sound_mediumHighVolume_e);
   sound_playSound(sound_gameStart_e);
 
   // Configuration Lives
@@ -90,7 +91,6 @@ void game_twoTeamTag(void) {
   transmitter_setFrequencyNumber(team);
 
   //Run in Single Shooter Mode
-  transmitter_setContinuousMode(false);
 
   //Build ignored Frequencies array so that every frequency is ignored except for the enemy team
   bool ignoredFrequencies[FILTER_FREQUENCY_COUNT];
@@ -98,6 +98,8 @@ void game_twoTeamTag(void) {
     //Set ignored frequency to true for every frequency except for the frequency of the enemys team
     ignoredFrequencies[i] = (i != (team == TEAM_1? TEAM_2: TEAM_1));
   }
+  bool isTeamOne = (team==TEAM_1);
+  transmitter_setContinuousMode(isTeamOne);
   detector_setIgnoredFrequencies(ignoredFrequencies);
 
   //Enable Trigger and Set Frequency Number
@@ -110,7 +112,8 @@ void game_twoTeamTag(void) {
   interrupts_enableTimerGlobalInts(); // enable global interrupts.
   interrupts_startArmPrivateTimer();  // start the main timer.
   interrupts_enableArmInts(); // now the ARM processor can see interrupts.
-
+  lives = LIVES;
+  health = isTeamOne ? HEALTH_JEDI:HEALTH_DROID;
   //Wait till staring sound over and clear any hits it may cause
   while(sound_isBusy()){};
   detector_clearHit();
@@ -137,7 +140,7 @@ void game_twoTeamTag(void) {
           printf("out of health\n"); //Debug Print
           sound_playSound(sound_loseLife_e); //Play loseLife sound
           invincibilityTimer_start(INVINCIBILTY_TIME); //Start Invincibility Time
-          health = HEALTH; //Reset Health
+          health = isTeamOne ? HEALTH_JEDI:HEALTH_DROID; //Reset Health
         }
       }
       else{
