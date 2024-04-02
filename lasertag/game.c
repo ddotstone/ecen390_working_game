@@ -58,6 +58,16 @@ uint16_t prevHealth;
 uint16_t prevLives;
 uint16_t team;
 
+uint16_t gameOverSound;
+uint16_t loseLifeSound;
+uint16_t hitSound;
+uint16_t startupSound;
+uint16_t deathSound;
+uint16_t shootSound;
+uint16_t reloadSound;
+uint16_t gameOverMusic;
+
+
 //Helper function to print Health and Lives to screen
 //Will clear old health and lives and print new
 static void printHealthLives();
@@ -82,7 +92,7 @@ void game_twoTeamTag(void) {
   initializers_all();
   //Set Game Volume and also Set start Sound
   sound_setVolume(sound_mediumHighVolume_e);
-  sound_playSound(sound_gameStart_e);
+  
 
   // Configuration Lives
   
@@ -118,6 +128,34 @@ void game_twoTeamTag(void) {
   while(sound_isBusy()){};
   detector_clearHit();
 
+  if(isTeamOne){
+    health = HEALTH_JEDI;
+    lives = LIVES;
+    gameOverSound = sound_gameOver_jedi;
+    loseLifeSound = sound_loseLife_jedi;
+    hitSound = sound_hit_jedi;
+    startupSound = sound_gameStart_jedi;
+    deathSound = sound_gameOver_jedi;
+    shootSound = sound_gunFire_jedi;
+    gameOverMusic = sound_returnToBase_jedi;
+
+  }
+  else {
+    health = HEALTH_DROID;
+    lives = LIVES;
+    gameOverSound = sound_gameOver_droid;
+    loseLifeSound = sound_loseLife_droid;
+    hitSound = sound_hit_droid;
+    startupSound = sound_gameStart_droid;
+    deathSound = sound_gameOver_droid;
+    shootSound = sound_gunFire_droid;
+    reloadSound = sound_gunReload_droid;
+    gameOverMusic = sound_returnToBase_droid;
+
+  }
+
+  sound_playSound(startupSound);
+
   // Checks for Shots, handles hits, keeps track of lives and health.
   while(true){
     //Run Detector Function
@@ -134,17 +172,17 @@ void game_twoTeamTag(void) {
         // If you are dead exit the game loop
         if(lives <= 0){
             printf("Game Over\n"); //Debug Print
-            sound_playSound(sound_gameOver_e); //Play Game Over Sound
+            sound_playSound(gameOverSound); //Play Game Over Sound
             break; //If game over break out of game loop
         } else {
           printf("out of health\n"); //Debug Print
-          sound_playSound(sound_loseLife_e); //Play loseLife sound
+          sound_playSound(loseLifeSound); //Play loseLife sound
           invincibilityTimer_start(INVINCIBILTY_TIME); //Start Invincibility Time
           health = isTeamOne ? HEALTH_JEDI:HEALTH_DROID; //Reset Health
         }
       }
       else{
-        sound_playSound(sound_hit_e); //If No death do Sound_Hit
+        sound_playSound(hitSound); //If No death do Sound_Hit
 
       }
       //If the health has changed, reprint to display
@@ -173,7 +211,7 @@ void game_twoTeamTag(void) {
     sound_playSound(sound_oneSecondSilence_e); //Play One Second Silence
 
     while(sound_isBusy()); // Wait for sound to end
-    sound_playSound(sound_returnToBase_e); //Play Return to base
+    sound_playSound(gameOverMusic); //Play Return to base
 
     }
   // End game loop...

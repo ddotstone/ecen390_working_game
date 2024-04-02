@@ -234,17 +234,17 @@ void sound_setSound(sound_sounds_t sound) {
   sound_array =
       NULL; // Set the pointer to NULL so you can detect it never being set.
   switch (sound) {
-  case sound_gameStart_e:
+  case sound_gameStart_jedi:
     sound_array = gameBoyStartup_wav; // Set the array holding the data.
     sound_sampleCount =
         GAMEBOYSTARTUP_WAV_NUMBER_OF_SAMPLES; // Size of the array.
     break;
-  case sound_gunFire_e:
+  case sound_gunFire_jedi:
     sound_array = bcfire01_48k_wav; // Set the array holding the data.
     sound_sampleCount =
         BCFIRE01_48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
     break;
-  case sound_hit_e:
+  case sound_hit_jedi:
     sound_array = ouch48k_wav; // You get the idea...
     sound_sampleCount = OUCH48K_WAV_NUMBER_OF_SAMPLES;
     break;
@@ -252,25 +252,53 @@ void sound_setSound(sound_sounds_t sound) {
     sound_array = gunEmpty48k_wav;
     sound_sampleCount = GUNEMPTY48K_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_gunReload_e:
+  case sound_gunReload_droid:
     sound_array = powerUp48k_wav;
     sound_sampleCount = POWERUP48K_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_loseLife_e:
+  case sound_loseLife_jedi:
     sound_array = screamAndDie48k_wav;
     sound_sampleCount = SCREAMANDDIE48K_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_gameOver_e:
+  case sound_gameOver_jedi:
     sound_array = pacmanDeath_wav;
     sound_sampleCount = PACMANDEATH_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_returnToBase_e:
+  case sound_returnToBase_jedi:
     sound_array = gameOver48k_wav;
     sound_sampleCount = GAMEOVER48K_WAV_NUMBER_OF_SAMPLES;
     break;
   case sound_oneSecondSilence_e:
     sound_array = soundOfSilence;
     sound_sampleCount = ONE_SECOND_OF_SOUND_ARRAY_SIZE;
+    break;
+
+    //These are droid sounds
+  case sound_gameStart_droid:
+    sound_array = gameBoyStartup_wav; // Set the array holding the data.
+    sound_sampleCount =
+        GAMEBOYSTARTUP_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+    break;
+  case sound_gunFire_droid:
+    sound_array = bcfire01_48k_wav; // Set the array holding the data.
+    sound_sampleCount =
+        BCFIRE01_48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+    break;
+  case sound_hit_droid:
+    sound_array = ouch48k_wav; // You get the idea...
+    sound_sampleCount = OUCH48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_loseLife_droid:
+    sound_array = screamAndDie48k_wav;
+    sound_sampleCount = SCREAMANDDIE48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_gameOver_droid:
+    sound_array = pacmanDeath_wav;
+    sound_sampleCount = PACMANDEATH_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_returnToBase_droid:
+    sound_array = gameOver48k_wav;
+    sound_sampleCount = GAMEOVER48K_WAV_NUMBER_OF_SAMPLES;
     break;
   default:
     printf("sound_setSound(): bogus sound value(%d)\n", sound);
@@ -293,53 +321,53 @@ void sound_stopSound() {
 // Plays several sounds.
 // To invoke, just place this in your main.
 // Completely stand alone, doesn't require interrupts, etc.
-void sound_runTest() {
-  printf("****************** sound_runTest() ******************\n");
+// void sound_runTest() {
+//   printf("****************** sound_runTest() ******************\n");
 
-  sound_init();
-  sound_tick();
-  sound_setSound(sound_gunClick_e);
-  printf("playing gunClick_e\n");
-  sound_startSound();
-  while (1) {
-    sound_tick();
-    if (!sound_isBusy())
-      break;
-  }
-  sound_setSound(sound_gunFire_e);
-  printf("playing gunFire_e\n");
-  sound_startSound();
-  while (1) {
-    sound_tick();
-    if (!sound_isBusy())
-      break;
-  }
-  sound_setSound(sound_gunReload_e);
-  printf("playing gunReload_e\n");
-  sound_startSound();
-  while (1) {
-    sound_tick();
-    if (!sound_isBusy())
-      break;
-  }
-  sound_setSound(sound_loseLife_e);
-  printf("playing loseLife_e\n");
-  sound_startSound();
-  while (1) {
-    sound_tick();
-    if (!sound_isBusy())
-      break;
-  }
-  sound_setSound(sound_gameOver_e);
-  printf("playing gameOver_e\n");
-  sound_startSound();
-  while (1) {
-    sound_tick();
-    if (!sound_isBusy())
-      break;
-  }
-  printf("done.\n");
-}
+//   sound_init();
+//   sound_tick();
+//   sound_setSound(sound_gunClick_e);
+//   printf("playing gunClick_e\n");
+//   sound_startSound();
+//   while (1) {
+//     sound_tick();
+//     if (!sound_isBusy())
+//       break;
+//   }
+//   sound_setSound(sound_gunFire_e);
+//   printf("playing gunFire_e\n");
+//   sound_startSound();
+//   while (1) {
+//     sound_tick();
+//     if (!sound_isBusy())
+//       break;
+//   }
+//   sound_setSound(sound_gunReload_e);
+//   printf("playing gunReload_e\n");
+//   sound_startSound();
+//   while (1) {
+//     sound_tick();
+//     if (!sound_isBusy())
+//       break;
+//   }
+//   sound_setSound(sound_loseLife_e);
+//   printf("playing loseLife_e\n");
+//   sound_startSound();
+//   while (1) {
+//     sound_tick();
+//     if (!sound_isBusy())
+//       break;
+//   }
+//   sound_setSound(sound_gameOver_e);
+//   printf("playing gameOver_e\n");
+//   sound_startSound();
+//   while (1) {
+//     sound_tick();
+//     if (!sound_isBusy())
+//       break;
+//   }
+//   printf("done.\n");
+// }
 
 /**********************************************************************************
  * Note from BLH: Most of this code was re-purposed from the original Digilent

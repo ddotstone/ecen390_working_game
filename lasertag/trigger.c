@@ -35,6 +35,7 @@ volatile bool ignoreGunInput; //ignore gun pin input
 volatile bool singleShot; //Has a shot been shot for this trigger pull
 volatile trigger_shotsRemaining_t shots_remaining; //Total shots left in gun
 
+
 // State of trigger timer
 typedef enum {
   INIT,    // Initializing trigger states
@@ -96,7 +97,7 @@ void trigger_tick() {
                     triggerState = DEBOUNCED_PRESS;
                     DPCHAR('D');
                     DPCHAR('\n');
-                    sound_playSound(sound_gunFire_e);
+                    sound_playSound(sound_gunFire_droid);
  
                 }
                 //If trigger disabled, signify no shot taken
@@ -155,7 +156,7 @@ void trigger_tick() {
             //If the held trigger time reaches 3 Seconds, reload the gun
             if(pressTimer == AUTO_RELOAD_TICKS){
                 autoReloadTimer_quick();//Run quick reload
-                sound_playSound(sound_gunReload_e); //Play reload sound
+                sound_playSound(sound_gunReload_droid); //Play reload sound
                 pressTimer = 0;
             }
             pressTimer++; //Increment press hold timer
