@@ -35,6 +35,8 @@ void trigger_enable();
 // Disable the trigger state machine so that trigger presses are ignored.
 void trigger_disable();
 
+void trigger_isJedi(bool isJedi);
+
 // Returns the number of remaining shots.
 trigger_shotsRemaining_t trigger_getRemainingShotCount();
 

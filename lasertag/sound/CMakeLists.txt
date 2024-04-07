@@ -1,12 +1,18 @@
 add_library(sound 
-bcfire01_48k.wav.c
-gameBoyStartup.wav.c
-gameOver48k.wav.c
+battleDroidScream48k.wav.c
+blasterReload48k.wav.c
+blasterShot48k.wav.c
+droidHit48k.wav.c
 gunEmpty48k.wav.c
-ouch48k.wav.c
-pacmanDeath.wav.c
-powerUp48k.wav.c
-screamAndDie48k.wav.c
+helloThere48k.wav.c
+jediDie48k.wav.c
+jediHit48k.wav.c
+lightSaberClose48k.wav.c
+lightSaberOpen48k.wav.c
+lightSaberLoop48k.wav.c
+swGoodGuyTheme48k.wav.c
+swBadGuyTheme48k.wav.c
+surrenderJedi48k.wav.c
 sound.c
 )
 

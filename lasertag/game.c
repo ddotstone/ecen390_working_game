@@ -43,7 +43,7 @@ The code in runningModes.c can be an example for implementing the game here.
 #define INTERRUPTS_CURRENTLY_ENABLED true
 #define FILTER_OUT_TIME 500
 #define SWITCH_1_MASK 0x1
-#define CENTER_SCREEN 90,80
+#define CENTER_SCREEN 100,80
 #define LIVES_TEXT 20,220
 #define HEALTH_TEXT 20,180
 #define GAME_OVER_TEXT_LOC 80,120
@@ -109,52 +109,59 @@ void game_twoTeamTag(void) {
     ignoredFrequencies[i] = (i != (team == TEAM_1? TEAM_2: TEAM_1));
   }
   bool isTeamOne = (team==TEAM_1);
-  transmitter_setContinuousMode(isTeamOne);
+  transmitter_setContinuousMode(false);
   detector_setIgnoredFrequencies(ignoredFrequencies);
 
   //Enable Trigger and Set Frequency Number
   trigger_enable();
   transmitter_setFrequencyNumber(team);
 
-  initialize_diplay();
-
   //Begin Interrupts and Start Timers
   interrupts_enableTimerGlobalInts(); // enable global interrupts.
   interrupts_startArmPrivateTimer();  // start the main timer.
   interrupts_enableArmInts(); // now the ARM processor can see interrupts.
+
   lives = LIVES;
   health = isTeamOne ? HEALTH_JEDI:HEALTH_DROID;
-  //Wait till staring sound over and clear any hits it may cause
-  while(sound_isBusy()){};
-  detector_clearHit();
-
+  //Set Sounds for team Jedi or Team Droids
   if(isTeamOne){
     health = HEALTH_JEDI;
     lives = LIVES;
     gameOverSound = sound_gameOver_jedi;
-    loseLifeSound = sound_loseLife_jedi;
+    loseLifeSound = sound_die_jedi;
     hitSound = sound_hit_jedi;
     startupSound = sound_gameStart_jedi;
     deathSound = sound_gameOver_jedi;
-    shootSound = sound_gunFire_jedi;
-    gameOverMusic = sound_returnToBase_jedi;
+    gameOverMusic = sound_gameOver_jedi;
+    transmitter_isJedi(true);
+    trigger_isJedi(true);
 
   }
   else {
     health = HEALTH_DROID;
     lives = LIVES;
     gameOverSound = sound_gameOver_droid;
-    loseLifeSound = sound_loseLife_droid;
+    loseLifeSound = sound_die_droid;
     hitSound = sound_hit_droid;
     startupSound = sound_gameStart_droid;
     deathSound = sound_gameOver_droid;
     shootSound = sound_gunFire_droid;
     reloadSound = sound_gunReload_droid;
-    gameOverMusic = sound_returnToBase_droid;
-
+    gameOverMusic = sound_gameOver_droid;
+    transmitter_isJedi(false);
+    trigger_isJedi(false);
   }
+  
+  initialize_diplay(); //Initialize display of Lives
+
 
   sound_playSound(startupSound);
+  //Wait till staring sound over and clear any hits it may cause
+  while(sound_isBusy()){};
+
+  detector_clearHit();
+
+  
 
   // Checks for Shots, handles hits, keeps track of lives and health.
   while(true){
@@ -277,7 +284,7 @@ static void initialize_diplay(){
 
   //Print Team Number
   char teamNumber[CHAR_SPACES];
-  sprintf(teamNumber,"Team %d", team);
+  sprintf(teamNumber,"%s", team==TEAM_1 ? "Jedi" : "Droid"); //Either Set Team To Jedi or Droid
   display_setCursor(CENTER_SCREEN);
   display_setTextColor(DISPLAY_WHITE);
   display_print(teamNumber);

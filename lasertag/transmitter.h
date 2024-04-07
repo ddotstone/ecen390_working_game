@@ -29,8 +29,12 @@ void transmitter_tick();
 // Activate the transmitter.
 void transmitter_run();
 
+void transmitter_stop();
+
 // Returns true if the transmitter is still running.
 bool transmitter_running();
+
+void transmitter_isJedi(bool isJedi);
 
 // Sets the frequency number. If this function is called while the
 // transmitter is running, the frequency will not be updated until the

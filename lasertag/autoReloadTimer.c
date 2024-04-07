@@ -41,7 +41,7 @@ void autoReloadTimer_tick(){
                 autoReload_s = WAITING_RELOAD;
                 trigger_enable(); //Reenable Trigger
                 trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE); //Reset Shots
-                sound_playSound(sound_gunReload_e); //Play Reload Sound
+                sound_playSound(sound_gunReload_droid); //Play Reload Sound
 
             }
             break;
@@ -63,7 +63,7 @@ void autoReloadTimer_tick(){
 
 // Calling this starts starts a quick reload
 void autoReloadTimer_quick(){
-    sound_playSound(sound_gunReload_e); //Play Reload Sound
+    sound_playSound(sound_gunReload_droid); //Play Reload Sound
     autoReload_s = WAITING_RELOAD; //Set state to waiting for Reload
     trigger_setRemainingShotCount(AUTO_RELOAD_SHOT_VALUE); // Set all remaing shots 
     tick_counter = 0; //Reset Tick Counter

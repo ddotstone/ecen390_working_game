@@ -10,18 +10,25 @@ For questions, contact Brad Hutchings or Jeff Goeders, https://ece.byu.edu/
 #include <stdio.h>
 
 #include "sound.h"
-#include "bcfire01_48k.wav.h"
-#include "gameBoyStartup.wav.h"
-#include "gameOver48k.wav.h"
+#include "battleDroidScream48k.wav.h"
+#include "blasterReload48k.wav.h"
+#include "blasterShot48k.wav.h"
+#include "droidHit48k.wav.h"
+#include "helloThere48k.wav.h"
+#include "jediDie48k.wav.h"
+#include "jediHit48k.wav.h"
+#include "lightSaberClose48k.wav.h"
+#include "lightSaberLoop48k.wav.h"
+#include "lightSaberOpen48k.wav.h"
+#include "surrenderJedi48k.wav.h"
+#include "swBadGuyTheme48k.wav.h"
+#include "swGoodGuyTheme48k.wav.h"
 #include "gunEmpty48k.wav.h"
-#include "ouch48k.wav.h"
-#include "pacmanDeath.wav.h"
-#include "powerUp48k.wav.h"
-#include "screamAndDie48k.wav.h"
 #include "timer_ps.h"
 #include "xiicps.h"
 #include "xil_printf.h"
 #include "xil_types.h"
+#include "display.h"
 
 /***************************************************************
  * Quite a bit of this code was obtained from digilent.com
@@ -235,70 +242,69 @@ void sound_setSound(sound_sounds_t sound) {
       NULL; // Set the pointer to NULL so you can detect it never being set.
   switch (sound) {
   case sound_gameStart_jedi:
-    sound_array = gameBoyStartup_wav; // Set the array holding the data.
+    sound_array = helloThere48k_wav; // Set the array holding the data.
     sound_sampleCount =
-        GAMEBOYSTARTUP_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+        HELLOTHERE48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
     break;
-  case sound_gunFire_jedi:
-    sound_array = bcfire01_48k_wav; // Set the array holding the data.
+  case sound_gameStart_droid:
+    sound_array = surrenderJedi48k_wav; // Set the array holding the data.
     sound_sampleCount =
-        BCFIRE01_48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
-    break;
-  case sound_hit_jedi:
-    sound_array = ouch48k_wav; // You get the idea...
-    sound_sampleCount = OUCH48K_WAV_NUMBER_OF_SAMPLES;
-    break;
-  case sound_gunClick_e:
-    sound_array = gunEmpty48k_wav;
-    sound_sampleCount = GUNEMPTY48K_WAV_NUMBER_OF_SAMPLES;
-    break;
-  case sound_gunReload_droid:
-    sound_array = powerUp48k_wav;
-    sound_sampleCount = POWERUP48K_WAV_NUMBER_OF_SAMPLES;
-    break;
-  case sound_loseLife_jedi:
-    sound_array = screamAndDie48k_wav;
-    sound_sampleCount = SCREAMANDDIE48K_WAV_NUMBER_OF_SAMPLES;
-    break;
-  case sound_gameOver_jedi:
-    sound_array = pacmanDeath_wav;
-    sound_sampleCount = PACMANDEATH_WAV_NUMBER_OF_SAMPLES;
-    break;
-  case sound_returnToBase_jedi:
-    sound_array = gameOver48k_wav;
-    sound_sampleCount = GAMEOVER48K_WAV_NUMBER_OF_SAMPLES;
+        SURRENDERJEDI48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
     break;
   case sound_oneSecondSilence_e:
     sound_array = soundOfSilence;
     sound_sampleCount = ONE_SECOND_OF_SOUND_ARRAY_SIZE;
     break;
-
     //These are droid sounds
-  case sound_gameStart_droid:
-    sound_array = gameBoyStartup_wav; // Set the array holding the data.
-    sound_sampleCount =
-        GAMEBOYSTARTUP_WAV_NUMBER_OF_SAMPLES; // Size of the array.
-    break;
   case sound_gunFire_droid:
-    sound_array = bcfire01_48k_wav; // Set the array holding the data.
+    sound_array = blasterShot48k_wav; // Set the array holding the data.
     sound_sampleCount =
-        BCFIRE01_48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+        BLASTERSHOT48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+    break;
+  case sound_gunReload_droid:
+    sound_array = blasterReload48k_wav; // Set the array holding the data.
+    sound_sampleCount =
+        BLASTERRELOAD48K_WAV_NUMBER_OF_SAMPLES; // Size of the array.
+    break;
+  case sound_gunClick_e:
+    sound_array = gunEmpty48k_wav;
+    sound_sampleCount = GUNEMPTY48K_WAV_NUMBER_OF_SAMPLES;
     break;
   case sound_hit_droid:
-    sound_array = ouch48k_wav; // You get the idea...
-    sound_sampleCount = OUCH48K_WAV_NUMBER_OF_SAMPLES;
+    sound_array = droidHit48k_wav; // You get the idea...
+    sound_sampleCount = DROIDHIT48K_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_loseLife_droid:
-    sound_array = screamAndDie48k_wav;
-    sound_sampleCount = SCREAMANDDIE48K_WAV_NUMBER_OF_SAMPLES;
+  case sound_lightsaber_open:
+    sound_array = lightSaberOpen48k_wav; // You get the idea...
+    sound_sampleCount = LIGHTSABEROPEN48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_lightsaber_close:
+    sound_array = lightSaberClose48k_wav; // You get the idea...
+    sound_sampleCount = LIGHTSABERCLOSE48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_lightsaber_loop:
+    sound_array = lightSaberLoop48k_wav; // You get the idea...
+    sound_sampleCount = LIGHTSABERLOOP48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_die_droid:
+    sound_array = battleDroidScream48k_wav;
+    sound_sampleCount = BATTLEDROIDSCREAM48K_WAV_NUMBER_OF_SAMPLES;
     break;
   case sound_gameOver_droid:
-    sound_array = pacmanDeath_wav;
-    sound_sampleCount = PACMANDEATH_WAV_NUMBER_OF_SAMPLES;
+    sound_array = swGoodGuyTheme48k_wav;
+    sound_sampleCount = SWGOODGUYTHEME48K_WAV_NUMBER_OF_SAMPLES;
     break;
-  case sound_returnToBase_droid:
-    sound_array = gameOver48k_wav;
-    sound_sampleCount = GAMEOVER48K_WAV_NUMBER_OF_SAMPLES;
+  case sound_hit_jedi:
+    sound_array = jediHit48k_wav;
+    sound_sampleCount = JEDIHIT48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_die_jedi:
+    sound_array = jediDie48k_wav;
+    sound_sampleCount = JEDIDIE48K_WAV_NUMBER_OF_SAMPLES;
+    break;
+  case sound_gameOver_jedi:
+    sound_array = swBadGuyTheme48k_wav;
+    sound_sampleCount = SWBADGUYTHEME48K_WAV_NUMBER_OF_SAMPLES;
     break;
   default:
     printf("sound_setSound(): bogus sound value(%d)\n", sound);

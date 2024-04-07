@@ -52,6 +52,7 @@ volatile static uint16_t transmittingFrequencyModified; //Holds altered frequenc
 volatile static uint16_t tickCountPeriod; //Timer to keep track of states
 volatile bool continuousFlag; //Determines if the code should be run in continous format
 volatile bool debugFlag; //Determines if debug outputs should be printed
+static bool isCurrJedi;
 
 // Standard init function.
 void transmitter_init() {
@@ -85,7 +86,7 @@ void transmitter_tick() {
 
         case TRANSMITTING_HIGH:  // Transmitter is high
             //If timer is up, set transmitter state to INIT
-            if (timer == tickCountPeriod) { transmitterState = INIT; }
+            if (timer == tickCountPeriod && !isCurrJedi) { transmitterState = INIT; }
             //If transmitter is at frequency tick count, switch to low state
             else if (!(timer % (filter_frequencyTickTable[transmittingFrequency] / 2))) {
                 transmitter_set_jf1_to_zero();
@@ -99,7 +100,7 @@ void transmitter_tick() {
         case TRANSMITTING_LOW:  // Transmitter is low
 
             //If timer is up, set transmitter state to INIT
-            if (timer == tickCountPeriod) { transmitterState = INIT; }
+            if (timer == tickCountPeriod && !isCurrJedi) { transmitterState = INIT; }
             //If transmitter is at frequency tick count, switch to low state
             else if (!(timer % (filter_frequencyTickTable[transmittingFrequency] / 2))) {
                 transmitter_set_jf1_to_one();
@@ -151,6 +152,10 @@ void transmitter_tick() {
 // Activate the transmitter.
 void transmitter_run() {
     transmitterState = TRANSMITTING_HIGH;
+}
+
+void transmitter_stop(){
+    transmitterState = INIT;
 }
 
 // Returns true if the transmitter is still running.
@@ -248,6 +253,11 @@ void transmitter_runTestNoncontinuous() {
     printf("exiting transmitter_runTestNoncontinuos()\n");
 
 }
+
+void transmitter_isJedi(bool isJedi){
+    isCurrJedi = isJedi;
+}
+
 
 // Tests the transmitter in continuous mode.
 // To perform the test, connect the oscilloscope probe

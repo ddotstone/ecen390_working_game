@@ -26,21 +26,21 @@ typedef uint32_t sound_status_t;
 // sound-specific defines.
 typedef enum {
   sound_gameStart_jedi,       // Play a sound when the game starts.
-  sound_gunFire_jedi,         // Standard laser firing sound.
-  sound_hit_jedi,             // Player was hit by someone else.
-  sound_gunClick_e,        // Player pulled trigger but the clip is empty.
-  sound_loseLife_jedi,        // Sound made when you are hit enough times.
-  sound_gameOver_jedi,        // Sound made when the game is over.
-  sound_returnToBase_jedi,    // Remind the user that the game is over.
-  sound_oneSecondSilence_e, // One second of silence.
-  sound_gameStart_droid,       // Play a sound when the game starts.
+  sound_gameStart_droid,     //Surrender Jedi When Game Starts
+  sound_oneSecondSilence_e,     // One second of silence.
   sound_gunFire_droid,         // Standard laser firing sound.
-  sound_hit_droid,             // Player was hit by someone else.
   sound_gunClick_e,        // Player pulled trigger but the clip is empty.
   sound_gunReload_droid,       // Sound made when the gun reloads.
-  sound_loseLife_droid,        // Sound made when you are hit enough times.
+  sound_lightsaber_open,
+  sound_lightsaber_close,
+  sound_lightsaber_loop,
+  sound_hit_droid,             // Player was hit by someone else.
+  sound_die_droid,              //Sound for droid loss life
   sound_gameOver_droid,        // Sound made when the game is over.
-  sound_returnToBase_droid,    // Remind the user that the game is over.
+  sound_hit_jedi,             // Jedi was hit by someone else.
+  sound_die_jedi,              // Jedi Dies
+  sound_gameOver_jedi,        // Sound made when the game is over.
+
 } sound_sounds_t;
 
 // Just provide 4 volume settings.

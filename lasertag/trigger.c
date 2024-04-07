@@ -34,6 +34,8 @@ typedef uint16_t trigger_shotsRemaining_t;
 volatile bool ignoreGunInput; //ignore gun pin input
 volatile bool singleShot; //Has a shot been shot for this trigger pull
 volatile trigger_shotsRemaining_t shots_remaining; //Total shots left in gun
+sound_sounds_t shotNoise;
+static bool isCurrJedi;
 
 
 // State of trigger timer
@@ -67,6 +69,8 @@ void trigger_init() {
         ignoreGunInput = true;
     }
     triggerState = INIT;
+    shotNoise = sound_gunFire_droid;
+    isCurrJedi = false;
 }
 
 // Standard tick function.
@@ -97,11 +101,11 @@ void trigger_tick() {
                     triggerState = DEBOUNCED_PRESS;
                     DPCHAR('D');
                     DPCHAR('\n');
-                    sound_playSound(sound_gunFire_droid);
+                    sound_playSound(shotNoise);
  
                 }
                 //If trigger disabled, signify no shot taken
-                else{
+                else if (!isCurrJedi){
                     singleShot = false;
                     triggerState = DEBOUNCED_PRESS;
                     sound_playSound(sound_gunClick_e);
@@ -125,6 +129,10 @@ void trigger_tick() {
             else if (timer == DEBOUNCE_WAIT_TIME) {
                 DPCHAR('U');
                 DPCHAR('\n');
+                if(isCurrJedi){
+                    transmitter_stop();
+                    sound_playSound(sound_lightsaber_close);
+                }
                 triggerState = INIT;
             }
             break;
@@ -151,15 +159,18 @@ void trigger_tick() {
             if (singleShot) {
                 transmitter_run();
                 singleShot = false;
-                shots_remaining--;
+                if(!isCurrJedi) {shots_remaining--;}
             }
             //If the held trigger time reaches 3 Seconds, reload the gun
-            if(pressTimer == AUTO_RELOAD_TICKS){
+            if(pressTimer == AUTO_RELOAD_TICKS && !isCurrJedi){
                 autoReloadTimer_quick();//Run quick reload
                 sound_playSound(sound_gunReload_droid); //Play reload sound
                 pressTimer = 0;
             }
             pressTimer++; //Increment press hold timer
+            if(isCurrJedi && !sound_isBusy()){
+                sound_playSound(sound_lightsaber_loop);
+            }
             //Resets timer
             timer = 0;
             break;   
@@ -186,6 +197,12 @@ void trigger_disable() {
     disableTrigger = true;
 }
 
+void trigger_isJedi(bool isJedi){
+    isCurrJedi = isJedi;
+    shotNoise = isJedi ? sound_lightsaber_open : sound_gunFire_droid;
+}
+
+
 // Returns the number of remaining shots.
 trigger_shotsRemaining_t trigger_getRemainingShotCount() {
     return shots_remaining;
@@ -195,6 +212,7 @@ trigger_shotsRemaining_t trigger_getRemainingShotCount() {
 void trigger_setRemainingShotCount(trigger_shotsRemaining_t count) {
     shots_remaining = count;
 }
+
 
 // Runs the test continuously until BTN3 is pressed.
 // The test just prints out a 'D' when the trigger or BTN0
